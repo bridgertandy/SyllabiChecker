@@ -2,10 +2,6 @@ import re,sys,os
 from pathlib import Path
 from tkinter import filedialog
 
-current_directory = os.getcwd()
-file_name_pattern = r'^[A-Z]{2}\d{2}\s[A-Z]{4}\s\d{3}[A-Z]?\s\d{3}[A-Z]?\sSyllabus\.pdf$'
-#file name example         SU22      MATH        123P         001W      Syllabus .pdf
-
 def name_checker(file_name): #takes a string and compares it to file_name_pattern
     #print(file_name)
     #print(file_name_pattern)
@@ -18,10 +14,10 @@ def name_checker(file_name): #takes a string and compares it to file_name_patter
         return True
 
 def schedule_finder(file_name): #takes a lowercase string and looks for "schedule"
-    if "schedule" in file_name:
-        return True
-    else:
+    if "schedule" not in file_name:
         return False
+    else:
+        return True
 
 def select_file():
     return filedialog.askopenfilename(defaultextension='.xlsx',initialdir=current_directory,title="SELECT THE MASTER LISE (EXCEL FILE)")
@@ -30,6 +26,11 @@ def select_directory():
     return filedialog.askdirectory(title="SELECT FOLDER TO SORT")
 
 if __name__ == "__main__":
+    current_directory = os.getcwd()
+    master_list_path = Path(r"C:\Users\Bridger\OneDrive - College of Western Idaho\Coding Projects\SyllabiChecker\SyllabiChecker\00 MasterList-Syllabi Archival WS  102925 - Copy.xlsx")
+    file_name_pattern = r'^[A-Z]{2}\d{2}\s[A-Z]{4}\s\d{3}[A-Z]?\s\d{3}[A-Z]?\sSyllabus\.pdf$'
+    #file name example         SU22      MATH        123P         001W      Syllabus .pdf
+
     folder_path = Path(select_directory())
 
     NAME_ERROR_PATH = folder_path/"NAME ERROR"

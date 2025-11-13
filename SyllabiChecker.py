@@ -1,14 +1,12 @@
-import re,sys,os#,openpyxl
+import re,sys,os
 from pathlib import Path
 from tkinter import filedialog
 
 current_directory = os.getcwd()
-master_list_path = Path(r"C:\Users\Bridger\OneDrive - College of Western Idaho\Coding Projects\SyllabiChecker\SyllabiChecker\00 MasterList-Syllabi Archival WS  102925 - Copy.xlsx")
-#folder_path = Path(r"C:\Users\btandy\OneDrive - College of Western Idaho\Projects\SyllabiChecker\Thomas Bu - COMPLETED-MOVE TO ARCHIVE")
 file_name_pattern = r'^[A-Z]{2}\d{2}\s[A-Z]{4}\s\d{3}[A-Z]?\s\d{3}[A-Z]?\sSyllabus\.pdf$'
 #file name example         SU22      MATH        123P         001W      Syllabus .pdf
 
-def name_checker(file_name):
+def name_checker(file_name): #takes a string and compares it to file_name_pattern
     #print(file_name)
     #print(file_name_pattern)
     try:
@@ -19,8 +17,8 @@ def name_checker(file_name):
     except:
         return True
 
-def schedule_finder(file_name):
-    if "Schedule" in file_name:
+def schedule_finder(file_name): #takes a lowercase string and looks for "schedule"
+    if "schedule" in file_name:
         return True
     else:
         return False
@@ -47,7 +45,7 @@ if __name__ == "__main__":
             continue
         else:
             try:
-                if schedule_finder(f.name):
+                if schedule_finder(f.name.lower()):
                     f.rename(SCHEDULE_PATH/f.name)
                     continue
                 if name_checker(f.name):

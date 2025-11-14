@@ -35,11 +35,11 @@ if __name__ == "__main__":
 
     NAME_ERROR_PATH = folder_path/"NAME ERROR"
     SCHEDULE_PATH = folder_path/"SCHEDULES"
-    MANUAL_REVIEW_PATH = folder_path/"MANUAL REVIEW"
+    FOUND_MATCH_PATH = folder_path/"FOUND MATCH"
 
     NAME_ERROR_PATH.mkdir(exist_ok=True)
     SCHEDULE_PATH.mkdir(exist_ok=True)
-    MANUAL_REVIEW_PATH.mkdir(exist_ok=True)
+    FOUND_MATCH_PATH.mkdir(exist_ok=True)
 
     for f in folder_path.iterdir():
         if f.is_dir():

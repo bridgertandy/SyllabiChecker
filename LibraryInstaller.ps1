@@ -1,1 +1,1 @@
-py -m pip install 
+py -m pip install tk pathlib colored xlwings

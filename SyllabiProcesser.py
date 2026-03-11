@@ -1,0 +1,148 @@
+import re,sys,os,numbers,time
+from pathlib import Path
+from tkinter import filedialog
+from colored import bg,fg,attr
+import xlwings as xw
+
+def name_checker(pattern,string): #takes a string and compares it to file_name_pattern
+    #print(file_name)
+    #print(file_name_pattern)
+    try:
+        if re.fullmatch(pattern,string):
+            return False
+        else:
+            return True
+    except Exception as e:
+        print(e)
+        return True
+
+def schedule_finder(string): #takes a lowercase string and looks for "schedule"
+    if "schedule" not in string:
+        return False
+    else:
+        return True
+
+def cell_to_string(v):
+    if v is None:
+        return ''
+    # treat booleans separately because bool is a subclass of int
+    if isinstance(v, bool):
+        return str(v)
+    # try to coerce numeric-like values to float (handles int, float, numpy types, numeric strings)
+    try:
+        fv = float(v)
+    except Exception:
+        # not numeric: normalize whitespace and invisible characters
+        s = str(v)
+        s = s.replace('\u00A0', ' ').replace('\u200B', '').replace('\uFEFF', '')
+        return re.sub(r'\s+', ' ', s).strip()
+    else:
+        # drop trailing .0 for whole numbers, otherwise keep float representation
+        return str(int(fv)) if fv.is_integer() else str(fv)
+
+def exit_program():
+    input(bg('green')+'All done! Press enter to exit or just close the window'+attr('reset'))
+    exit()
+
+#================================Check file names======================================================================#
+    
+if __name__ == "__main__":
+    file_name_pattern = r'^[A-Z]{2}\d{2}\s[A-Z]{3,4}\s\d{3}[A-Z]?\s\d{3}[A-Z]?\sSyllabus\.pdf$'
+    #file name example         SU22      MATH        123P         001W      Syllabus .pdf
+
+    folder_path = Path(filedialog.askdirectory(title="SELECT FOLDER TO SORT"))
+
+    NAME_ERROR_PATH = folder_path/"NAME ERROR"
+    SCHEDULE_PATH = folder_path/"SCHEDULES"
+    FOUND_MATCH_PATH = folder_path/"FOUND MATCH"
+
+    NAME_ERROR_PATH.mkdir(exist_ok=True)
+    SCHEDULE_PATH.mkdir(exist_ok=True)
+    
+    print(bg('blue')+"CHECKING FILE NAMES:"+attr('reset'))
+
+    schedule_count = 0
+    name_count = 0
+
+    for f in folder_path.iterdir():
+        if f.is_dir():
+            continue
+        else:
+            try:
+                if schedule_finder(f.name.lower()):
+                    f.rename(SCHEDULE_PATH/f.name)
+                    schedule_count+= 1
+                    continue
+                if name_checker(file_name_pattern,f.name):
+                    f.rename(NAME_ERROR_PATH/f.name)
+                    name_count+= 1
+                    continue
+            except FileExistsError:
+                continue
+            
+    print(bg('blue')+f"{schedule_count} Schedules found")
+    print(f"{name_count} Name errors found"+attr('reset')+"\n")
+
+    #===========================Cross reference with master list========================================================================================================#
+
+    FOUND_MATCH_PATH = folder_path/"FOUND MATCH"
+    FOUND_MATCH_PATH.mkdir(exist_ok=True)
+    
+    if not FOUND_MATCH_PATH.is_dir():
+        print(bg('red')+'The "FOUND MATCH" folder could not be found. Please make sure you run SyllabiChecker.py before using this script.')
+        print('This program will automatically close in 30 seconds'+attr('reset'))
+        time.sleep(30)
+        sys.exit()
+
+    while (True):
+        print(bg('blue')+'CROSS REFERENCING WITH MASTER LIST:\nMake sure the excel file AND the correct workbook are open AND that it is formatted correctly')   
+        input('When ready, press enter to continue. You may have to click inside the window'+attr('reset'))
+        try:
+            master_list = xw.books.active
+            worksheet = xw.sheets.active
+            data_range = worksheet.used_range.value
+            break
+        except:
+            print(bg('red')+'ERROR, TRY AGAIN'+attr('reset'))
+            continue
+    
+    #=================CREATE EXCEL DATA LIST===========
+    if data_range is None:
+        print("No data was found in the excel file")
+        exit_program()
+    else:
+        if not isinstance(data_range,list):
+            data_range = [[data_range]]
+        elif data_range and not isinstance(data_range[0],(list,tuple)):
+            data_range = [data_range]
+    data = [[cell_to_string(v).lstrip('0') for v in row] 
+                                for row in data_range]
+    
+    #=================CREATE FILE LIST==================
+    file_list = []
+    for f in folder_path.iterdir():
+        if f.is_file() and f.suffix.lower()=='.pdf':
+            file_list.append(f)
+
+    #==================START SORT=======================
+    match_counter = 0
+    for index, row in enumerate(data):
+        for f in file_list:
+            parts = f.name.split()
+            if row[0] != parts[0]:
+                # print('wrong term')
+                break
+            match = (row[0]==parts[0])and(row[1]==parts[1])and(row[2]==parts[2].lstrip('0'))and(row[3]==parts[3].lstrip('0'))
+            if match:
+                match_counter+=1
+                try:
+                    print(f"Found match: {f.name}")
+                    worksheet.range(f'G{index+1}').value='X'
+                    f.rename(FOUND_MATCH_PATH/f.name)
+                except Exception as e:
+                    print(f'\nError: {e}\nFile: {f.name}')
+                    print(bg('red')+f'Check the master list for proper formatting, duplicate rows (Different instructors is OK), etc.'+attr('reset')+'\n')
+            continue
+
+    print(bg('blue')+f'{match_counter} matches found!'+attr('reset'))
+    exit_program()

@@ -1,11 +1,24 @@
-This repository holds tools that I made to use for work.
-
+Created by Bridger Tandy 2/13/2026
 
 # **Instructions for using the tools.**
 
-### LibraryInstaller.ps1
 
-This script is used to download Python libraries that are necessary to use the Python scripts in this repository.
+
+### General Instructions
+
+* For any of these to work, your Onedrive has to be synced to your computer. The scripts cannot access the files through the Onedrive website.
+* If you are going to move or copy a large folder (an entire semester folder), do it on the Onedrive website, not on your local files. Onedrive syncing between the computer and the website is very slow.
+* You will need to download Python for the .py scripts, you can find the standard Python install manager at https://www.python.org/downloads/
+* It is easier/faster (not required) to run these scripts in a dedicated Windows terminal, if you know how to use shell commands. Listed below are the only ones you need to know.
+* Change directory (cd) to wherever you have these scripts saved. The easiest way to get the path is to find your folder where they are saved, right click, and select copy path.
+* To run PowerShell scripts, the command is ./(name of script).ps1
+* To run Python scripts (with Python and the libraries already downloaded), the command is py ./(name of script).py
+
+
+
+### WordToPdf.ps1
+
+This is used to convert all word documents in a specific folder to PDFs. It is very useful and easy to use. Run the script using the instructions below and select the folder you want to convert.
 
 
 
@@ -13,13 +26,23 @@ To run it, right-click on the file and select "Run with PowerShell"
 
 
 
-If you get an error about permissions or execution policies, copy, paste, and run the following command and try again.
+If you get an error about permissions or execution policies, copy, paste, and run the following command in a terminal and try again.
 
 
 
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser
 
 
+
+### LibraryInstaller.ps1
+
+This script is used to download Python libraries that are necessary to use the Python scripts in this folder. Run it the same as the WordToPdf script.
+
+
+
+### SyllabiProcesser.py
+
+This is an updated version that just combines the two scripts listed below. Running this will do the same thing as running the other two in order. **USE THIS ONE.** Just open the script by double clicking and it will run.
 
 
 
@@ -55,7 +78,7 @@ Keep in mind, the script only matches if the file name EXACTLY matches a row in 
 
 
 
-### General tips
+### .osts scripts
 
-If you are going to move or do anything with a large folder (an entire semester folder), do it on the onedrive website, not on your local files. Onedrive syncing between the computer and the website is very slow. Small changes are ok to make on your local files.
+These are used in Excel under the "Automate" tab. As long as they are in your cloud storage somewhere, Excel should be able to run them. (If you are signed in with the same account)
 
